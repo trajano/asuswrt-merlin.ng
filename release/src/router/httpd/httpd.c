@@ -579,6 +579,12 @@ send_content_page( int status, char* title, char* extra_header, char* text , int
 	(void) fflush( conn_fp );
 }
 
+static int
+check_mime_type_and_return_true_if_javascript( char* mime_type)
+{
+    return strncmp( mime_type, "text/javascript", 15) == 0;
+}
+
 static void
 send_headers( int status, char* title, char* extra_header, char* mime_type, int fromapp)
 {
@@ -589,7 +595,7 @@ send_headers( int status, char* title, char* extra_header, char* mime_type, int 
     (void) fprintf( conn_fp, "x-frame-options: SAMEORIGIN\r\n");
     (void) fprintf( conn_fp, "x-xss-protection: 1; mode=block\r\n");
 
-    if (fromapp != 0){
+    if (fromapp != 0 && !check_mime_type_and_return_true_if_javascript(mime_type)){
 	(void) fprintf( conn_fp, "Cache-Control: no-store\r\n");	
 	(void) fprintf( conn_fp, "Pragma: no-cache\r\n");
 	if(fromapp == FROM_DUTUtil){
